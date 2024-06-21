@@ -1,0 +1,73 @@
+{
+    "Tourney": {
+        "StaffRoleId": 123,
+
+        "Bases": [
+            {
+                "Name": "Peris East",
+                "Sides": [ "East/Garage", "West/Bridge" ]
+            },
+            {
+                "Name": "Pale Canyon",
+                "Sides": [ "West", "South" ]
+            },
+            {
+                "Name": "Acan South",
+                "Sides": [ "East/Spawn", "West/Garage" ]
+            },
+            {
+                "Name": "Fort Liberty",
+                "Sides": [ "East", "West" ]
+            },
+            {
+                "Name": "Waterons Redemption",
+                "Sides": [ "North", "South" ]
+            },
+            {
+                "Name": "Bridgewater",
+                "Sides": [ "North", "South" ]
+            },
+            {
+                "Name": "Nettlemire Gardens",
+                "Sides": [ "North", "South" ]
+            },
+            {
+                "Name": "Kessels Crossing",
+                "Sides": [ "East", "West" ]
+            }
+        ],
+
+        "Factions": [
+            "TR", "VS", "NC"
+        ],
+
+        "Formats": [
+            {
+                "Name": "bo1",
+                "Steps": [
+                    "coinflip",
+                    "map-ban",
+                    "map-ban",
+                    "map-ban",
+                    "map-ban",
+                    "random-map",
+                    "pick-side",
+                    "finalize"
+                ]
+            }
+        ],
+
+        "Teams": [
+            {
+                "Name": "Team 1",
+                "Tag": "T1",
+                "Captains": [ 1 ]
+            },
+            {
+                "Name": "Team 2",
+                "Tag": "T2",
+                "Captains": [ 2 ]
+            }
+        ]
+    }
+}
