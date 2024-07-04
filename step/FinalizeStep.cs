@@ -15,6 +15,8 @@ namespace unoh.step {
 
         public DiscordMessageBuilder Create(MatchState state) {
             DiscordMessageBuilder builder = new();
+            builder.WithContent($"{state.GetCurrentTeamCaptainPings()}, confirm the match");
+
             builder.AddEmbed(_MakeEmbed(state));
             builder.AddComponents(FlipButtons.FINALIZE());
 
@@ -44,9 +46,9 @@ namespace unoh.step {
             for (int i = 0; i < bases.Count; ++i) {
                 MatchBase b = bases[i];
 
-                embed.Description += $"**Map {i + 1}**\n";
+                embed.Description += $"**Map {i + 1}** - {b.Base}\n";
                 embed.Description += $"{state.Team1.Tag} starts {b.Team1Side}\n";
-                embed.Description += $"{state.Team2.Tag} starts {b.Team2Side}\n";
+                embed.Description += $"{state.Team2.Tag} starts {b.Team2Side}\n\n";
             }
 
             embed.Color = DiscordColor.Green;

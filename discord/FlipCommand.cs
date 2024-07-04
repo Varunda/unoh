@@ -25,7 +25,8 @@ namespace unoh.discord {
         /// <returns></returns>
         [SlashCommand("flip", "do a match flip")]
         public async Task Flip(InteractionContext ctx,
-            [Option("Team", "team tag ")] string tag) {
+            [Autocomplete(typeof(DiscordTeamAutocomplete))] [Option("Team", "team tag ")] string tag,
+            [Autocomplete(typeof(DiscordFormatAutocomplete))] [Option("Format", "format")] string format) {
 
             TourneyTeam? sourceTeam = _Match.GetTeamOfUser(ctx.User.Id);
             if (sourceTeam == null) {
@@ -51,7 +52,8 @@ namespace unoh.discord {
             }
 
             response.AddEmbed(builder);
-            response.AddComponents(FlipButtons.ACCEPT(sourceTeam.Tag, team.Tag));
+            response.AddComponents(FlipButtons.ACCEPT(sourceTeam.Tag, team.Tag, format));
+            _Logger.LogInformation($"proposing flip [sourceTeam={sourceTeam.Tag}] [team={team.Tag}] [format={format}]");
 
             await ctx.CreateResponseAsync(response);
         }

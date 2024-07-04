@@ -5,22 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using unoh.discord;
 
 namespace unoh.step {
+    public class PickMapStep : IFlipStep {
 
-    public class RandomMapStep : IFlipStep {
-
-        public string Name => "random-map";
+        public string Name => "pick-map";
 
         public DiscordMessageBuilder Create(MatchState state) {
+
             DiscordMessageBuilder builder = new();
-            builder.Content = $"{state.GetCurrentTeamCaptainPings()}, confirm the map pick";
+            builder.WithContent($"{state.GetCurrentTeamCaptainPings()}, pick a map");
 
             DiscordEmbedBuilder embed = new();
-            embed.Title = $"Selecting a random map";
+            embed.Title = $"{state.GetCurrentTeam().Tag}, pick a map";
+            embed.Description = "";
 
-            embed.Description = $"";
             List<string> bases = state.GetUnbannedBases();
             for (int i = 0; i < bases.Count; ++i) {
                 string b = bases[i];
@@ -28,29 +27,35 @@ namespace unoh.step {
                 embed.Description += $"[{i + 1}] {b}\n";
             }
             embed.Description += "\n";
-            embed.Color = DiscordColor.Purple;
+            embed.Color = DiscordColor.SpringGreen;
 
-            int selectedBaseIndex = Random.Shared.Next(0, bases.Count);
-            string selectedBase = bases[selectedBaseIndex];
+            List<DiscordSelectComponentOption> options = bases.Select(iter => {
+                return new DiscordSelectComponentOption(iter, iter);
+            }).ToList();
 
-            embed.Description += $"Rolled a {selectedBaseIndex + 1}\n";
-            embed.Description += $"Result: [{selectedBaseIndex + 1}] **{selectedBase}**\n";
-
-            state.AddBase(selectedBase);
+            DiscordSelectComponent dropdown = new($"@pick-map", "Pick a map...", options);
+            builder.AddComponents(dropdown);
 
             builder.AddEmbed(embed);
-
-            builder.AddComponents(FlipButtons.NEXT_STEP());
 
             return builder;
         }
 
         public Task<DiscordMessageBuilder> Update(MatchState state, ComponentInteractionCreateEventArgs args) {
+            string[] maps = args.Values;
+            if (maps.Length != 1) {
+                throw new Exception($"expected 1 value, got {maps.Length} instead");
+            }
+
+            string map = maps[0];
+            state.AddBase(map);
+
             DiscordMessageBuilder builder = new();
 
             DiscordEmbedBuilder embed = new();
-            embed.Title = $"Map selected";
-            embed.Description = $"{state.GetPickedBases().Last().Base} picked";
+            embed.Title = $"Map picked";
+            embed.Description = $"<@{args.User.Id}> pick {map}";
+            embed.Color = DiscordColor.Green;
 
             builder.AddEmbed(embed);
 
@@ -58,6 +63,5 @@ namespace unoh.step {
 
             return Task.FromResult(builder);
         }
-
     }
 }

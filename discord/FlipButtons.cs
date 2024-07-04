@@ -13,7 +13,7 @@ namespace unoh.discord {
 
     public class FlipButtons {
 
-        public static DiscordButtonComponent ACCEPT(string team1, string team2, string format = "bo1")
+        public static DiscordButtonComponent ACCEPT(string team1, string team2, string format)
             => new(DSharpPlus.ButtonStyle.Success, $"@accept.{team1}.{team2}.{format}", "Accept");
 
         public static DiscordButtonComponent NEXT_STEP() => new(DSharpPlus.ButtonStyle.Primary, "@next", "Next");

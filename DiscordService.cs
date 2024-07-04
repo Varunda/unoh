@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,9 +56,9 @@ namespace unoh {
             _Discord = discord;
 
             _Discord.Get().Ready += Client_Ready;
+            _Discord.Get().GuildAvailable += Guild_Available;
             _Discord.Get().InteractionCreated += Generic_Interaction_Created;
             _Discord.Get().ContextMenuInteractionCreated += Generic_Interaction_Created;
-            _Discord.Get().GuildAvailable += Guild_Available;
             _Discord.Get().ComponentInteractionCreated += Component_Interact;
 
             _SlashCommands = _Discord.Get().UseSlashCommands(new SlashCommandsConfiguration() {
@@ -175,11 +176,6 @@ namespace unoh {
             } else {
                 _Logger.LogInformation($"Successfully found home guild '{guild.Name}'/{guild.Id}");
             }
-
-            DiscordChannel? channel = await sender.GetChannelAsync(_DiscordOptions.Value.ChannelId);
-            if (channel == null) {
-                _Logger.LogWarning($"Failed to find channel {_DiscordOptions.Value.ChannelId}");
-            }
         }
 
         private Task Guild_Available(DiscordClient sender, GuildCreateEventArgs args) {
@@ -246,6 +242,8 @@ namespace unoh {
 
             string cmd = parts[0];
 
+            Stopwatch timer = Stopwatch.StartNew();
+
             try {
                 if (cmd == "@accept") {
                     await _MatchManager.Create(args);
@@ -255,44 +253,52 @@ namespace unoh {
                     // the other teams turn, so we need a way to prevent the buttons from being disabled
                     bool disableButtons = await _MatchManager.PerformInteraction(args);
 
-                    // disable the components of the message acted on
-                    if (disableButtons == true && args.Message.Components.Count > 0) {
-                        DiscordMessage msg = args.Message;
-                        try {
-                            foreach (DiscordActionRowComponent? compRow in msg.Components) {
-                                if (compRow == null) { continue; }
-
-                                foreach (DiscordComponent? comp in compRow.Components) {
-                                    if (comp == null) { continue; }
-
-                                    if (comp.Type == ComponentType.Button) {
-                                        ((DiscordButtonComponent)comp).Disable();
-                                    } else if (comp.Type == ComponentType.StringSelect) {
-                                        ((DiscordSelectComponent)comp).Disable();
-                                    } else {
-                                        _Logger.LogWarning($"unchecked component type [comp.Type={comp.Type}]");
-                                    }
-                                }
-                            }
-                            _Logger.LogDebug($"disabling components of message acted on [msg.Id={msg.Id}]");
-                            await msg.ModifyAsync(new DiscordMessageBuilder(msg));
-                        } catch (Exception ex) {
-                            if (ex is BadRequestException rex) {
-                                _Logger.LogError(rex, $"400 bad request disabling buttons: {rex.Errors}");
-                            } else {
-                                _Logger.LogError(ex, $"failed to updated message");
-                            }
-                        }
-                    } else {
-                        _Logger.LogTrace($"previous message has no components [msg.Id={args.Message.Id}]");
+                    _Logger.LogDebug($"interaction performed [disableButtons={disableButtons}]");
+                    if (disableButtons == false) {
+                        return;
                     }
 
+                    // disable the components of the message acted on
+                    if (args.Message.Components.Count <= 0) {
+                        _Logger.LogTrace($"previous message has no components [msg.Id={args.Message.Id}]");
+                        return;
+                    }
+
+                    DiscordMessage msg = args.Message;
+                    try {
+                        foreach (DiscordActionRowComponent? compRow in msg.Components) {
+                            if (compRow == null) { continue; }
+
+                            foreach (DiscordComponent? comp in compRow.Components) {
+                                if (comp == null) { continue; }
+
+                                if (comp.Type == ComponentType.Button) {
+                                    ((DiscordButtonComponent)comp).Disable();
+                                } else if (comp.Type == ComponentType.StringSelect) {
+                                    ((DiscordSelectComponent)comp).Disable();
+                                } else {
+                                    _Logger.LogWarning($"unchecked component type [comp.Type={comp.Type}]");
+                                }
+                            }
+                        }
+                        _Logger.LogDebug($"disabling components of message acted on [msg.Id={msg.Id}]");
+                        await msg.ModifyAsync(new DiscordMessageBuilder(msg));
+                    } catch (Exception ex) {
+                        if (ex is BadRequestException rex) {
+                            _Logger.LogError(rex, $"400 bad request disabling buttons: {rex.Errors}");
+                        } else {
+                            _Logger.LogError(ex, $"failed to updated message");
+                        }
+                    }
                 }
             } catch (BadRequestException ex) {
                 _Logger.LogError(ex, $"400 bad request handling {id}: {ex.Errors}");
             } catch (Exception ex) {
                 _Logger.LogError(ex, $"failed to handle {id}");
             }
+
+            _Logger.LogDebug($"handled component interaction [id={args.Id}] [user={args.User.Id}/{args.User.Username}] [timer={timer.ElapsedMilliseconds}ms]");
+
         }
 
         /// <summary>
@@ -320,6 +326,10 @@ namespace unoh {
                 } else {
                     await args.Context.Interaction.EditResponseText(error);
                 }
+            } catch (BadRequestException rex) {
+                _Logger.LogError(rex, $"400 bad request handling {args.ButtonId}: {rex.Errors}");
+            } catch (UnauthorizedException uex) {
+                _Logger.LogError(uex, $"400 bad request handling {args.ButtonId}: {uex.JsonMessage}");
             } catch (Exception ex) {
                 _Logger.LogError(ex, $"error updating interaction response with error");
             }

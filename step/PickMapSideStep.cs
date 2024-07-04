@@ -26,9 +26,11 @@ namespace unoh.step {
             }
 
             TourneyBase? b = state.GetBase(unpickedBase.Base) ?? throw new Exception($"failed to find base {unpickedBase.Base}");
+            builder.WithContent($"{state.GetCurrentTeamCaptainPings()}, pick a starting side for {unpickedBase.Base}");
 
-            embed.Title = $"{state.GetCurrentTeam().Team.Tag}, pick a starting side";
+            embed.Title = $"{state.GetCurrentTeam().Tag}, pick a starting side";
             embed.Description = $"**Base**: {unpickedBase.Base}\n**Sides**: {string.Join(", ", b.Sides)}";
+            embed.Color = DiscordColor.CornflowerBlue;
             builder.AddEmbed(embed);
 
             List<string> pickedSides = [];
@@ -76,8 +78,6 @@ namespace unoh.step {
             embed.Description = $"**Base**: {b.Name}\n";
             embed.Description += $"[{state.Team1.Tag}] {state.Team1.Team.Name} starts {unpickedBase.Team1Side ?? "_unpicked_"}\n";
             embed.Description += $"[{state.Team2.Tag}] {state.Team2.Team.Name} starts {unpickedBase.Team2Side ?? "_unpicked_"}";
-
-            state.SwapTeam();
 
             builder.AddEmbed(embed);
 

@@ -33,6 +33,7 @@ namespace unoh.step {
                     embed.Description += $"~~{iter.Name}~~\n";
                 }
             }
+            embed.Color = DiscordColor.Red;
             builder.AddEmbed(embed);
 
             List<DiscordSelectComponentOption> options = state.GetUnbannedBases().Select(iter => {
@@ -40,7 +41,6 @@ namespace unoh.step {
             }).ToList();
 
             DiscordSelectComponent dropdown = new($"@ban-map", "Ban a map...", options);
-
             builder.AddComponents(dropdown);
 
             return builder;
@@ -51,8 +51,6 @@ namespace unoh.step {
             if (maps.Length != 1) {
                 throw new Exception($"expected 1 value, got {maps.Length} instead");
             }
-
-            state.SwapTeam();
 
             string map = maps[0];
             state.RemoveBase(map);
@@ -65,6 +63,8 @@ namespace unoh.step {
             embed.Color = DiscordColor.Purple;
 
             builder.AddEmbed(embed);
+
+            state.SwapTeam();
 
             return Task.FromResult(builder);
         }

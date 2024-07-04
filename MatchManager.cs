@@ -64,6 +64,12 @@ namespace unoh {
                 return;
             }
 
+            if (t2.Captains.Contains(ctx.User.Id) == false) {
+                await ctx.Interaction.EditResponseErrorEmbed($"You are not a captain for {t2.Tag}."
+                    + $" Only {string.Join(", ", t2.Captains.Select(iter => $"<@{iter}>"))} can accept");
+                return;
+            }
+
             MatchFormat? matchFormat = _Match.GetFormat(format);
             if (matchFormat == null) {
                 await ctx.Interaction.EditResponseErrorEmbed($"failed to find format {format}");
