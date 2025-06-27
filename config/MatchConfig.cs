@@ -10,8 +10,6 @@ namespace unoh.config {
 
         public List<TourneyBase> Bases { get; set; } = [];
 
-        public List<string> Factions { get; set; } = [];
-
         public ulong StaffRoleId { get; set; } = 0;
 
         public List<TourneyTeam> Teams { get; set; } = [];
@@ -35,6 +33,8 @@ namespace unoh.config {
         public string Tag { get; set; } = "";
 
         public List<ulong> Captains { get; set; } = [];
+
+        public string FactionPreference { get; set; } = "";
 
     }
 

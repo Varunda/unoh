@@ -19,8 +19,8 @@ namespace unoh.step {
             state.SwapTeam();
 
             DiscordEmbedBuilder embed = new();
-            embed.Title = "Flipping for first ban";
-            embed.Description = $"Winner gets first map ban";
+            embed.Title = "Flipping for first ban/Faction";
+            embed.Description = $"Winner gets first map ban and faction pick";
             builder.AddEmbed(embed);
 
             builder.WithContent($"{state.GetCurrentTeamCaptainPings()}, Heads or Tails?");
@@ -43,12 +43,12 @@ namespace unoh.step {
             int teamIndex = Random.Shared.Next(0, 2);
             if (teamIndex == selectedTeamIndex) {
                 state.SetTeam2();
-                state.Team2.Faction = "TR";
-                state.Team1.Faction = "VS";
+                //state.Team2.Faction = "TR";
+                //state.Team1.Faction = "VS";
             } else {
                 state.SetTeam1();
-                state.Team2.Faction = "VS";
-                state.Team1.Faction = "TR";
+                //state.Team2.Faction = "VS";
+                //state.Team1.Faction = "TR";
             }
 
             DiscordMessageBuilder builder = new();
@@ -60,8 +60,8 @@ namespace unoh.step {
             DiscordEmbedBuilder embed = new();
             embed.Title = $"{state.Team2.Team.Tag} {won} the coin flip";
             embed.Description = $"{state.Team2.Team.Tag} picks {sidePicked}\nResult: **{side}**\n\n{state.Team2.Team.Tag} {won} the coin flip!\n\n";
-            embed.Description += $"{state.Team1.Tag} will be on {state.Team1.Faction}\n";
-            embed.Description += $"{state.Team2.Tag} will be on {state.Team2.Faction}\n";
+            //embed.Description += $"{state.Team1.Tag} will be on {state.Team1.Faction}\n";
+            //embed.Description += $"{state.Team2.Tag} will be on {state.Team2.Faction}\n";
             builder.AddEmbed(embed);
 
             return Task.FromResult(builder);

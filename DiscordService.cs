@@ -387,9 +387,7 @@ namespace unoh {
         /// </summary>
         /// <param name="options"></param>
         private string GetCommandString(IEnumerable<DiscordInteractionDataOption>? options) {
-            if (options == null) {
-                options = new List<DiscordInteractionDataOption>();
-            }
+            options ??= [];
 
             string s = "";
 

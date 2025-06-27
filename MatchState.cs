@@ -37,7 +37,7 @@ namespace unoh {
             Format = format;
 
             _BasesLeft = new List<string>(Config.Bases.Select(iter => iter.Name));
-            _FactionsLeft = new List<string>(Config.Factions);
+            _FactionsLeft = new List<string>(["TR", "NC", "VS"]);
         }
 
         public string GetStepName() => Format.Steps[_StepIndex];

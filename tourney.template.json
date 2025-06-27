@@ -54,6 +54,38 @@
                     "pick-side",
                     "finalize"
                 ]
+            },
+            {
+                "Name": "bo2",
+                "Steps": [
+                    "coinflip",
+                    "map-ban",
+                    "map-ban",
+                    "map-ban",
+                    "map-ban",
+                    "pick-map",
+                    "pick-side",
+                    "pick-map",
+                    "pick-side",
+                    "finalize"
+                ]
+            },
+            {
+                "Name": "bo3",
+                "Steps": [
+                    "coinflip",
+                    "map-ban",
+                    "map-ban",
+                    "pick-map",
+                    "pick-side",
+                    "pick-map",
+                    "pick-side",
+                    "map-ban",
+                    "map-ban",
+                    "random-map",
+                    "pick-side",
+                    "finalize"
+                ]
             }
         ],
 
@@ -61,12 +93,13 @@
             {
                 "Name": "Team 1",
                 "Tag": "T1",
-                "Captains": [ 1 ]
+                "Captains": [ 1232523165893132288 ]
             },
             {
                 "Name": "Team 2",
                 "Tag": "T2",
-                "Captains": [ 2 ]
+                "Captains": [ 1232523165893132288 ]
+                
             }
         ]
     }
